@@ -1,0 +1,47 @@
+\phantomsection
+\chapter{Conclusion}
+
+Machine translation has made significant strides since its initial spark was lit by Weaver in 1949. Early rule-based systems have evolved into sophisticated neural machine translation (NMT) models, which leverage vast amounts of data and advanced algorithms to produce translations that are more accurate and fluent. We have traced this very development from just the notion of a Machine Translating text from one language to another, to developing them to the point that their translations astonish us.
+
+The development has gone from the Rule-based systems which relied on predefined linguistic rules and bilingual dictionaries. These systems were limited by their inability to handle linguistic variability and the context-dependent nature of language. This was followed by the Statistical Machine Translation system, which was designed to use large corpora to statistically determine the most likely translations, improving accuracy but still struggling with fluency. Eventually, the advent of NMT in the 2010s revolutionized the field. NMT models use deep learning techniques to capture contextual and syntactic nuances, resulting in more natural and coherent translations. Followed by further progress in the field and the advent of architectures such as `\textit{Transformers}' has allowed these NMT systems to scale and be trained on a large amount of data being able to have extremely long context lengths. Thus not only producing accurate and fluent translation for short-length sentences but whole discourses.
+
+We evaluated the performance of Google Translate and Azure Translate using automated metrics (BLEU and ROUGE) and human evaluations. These assessments provide a comprehensive view of the current state of MT, highlighting both, the aforementioned achievements and ongoing challenges/issues. Let's look at the findings:-
+
+\paragraph{Automated Metrics:}
+\begin{itemize}
+    \item \textbf{BLEU Scores}: Google Translate achieved a higher BLEU score (84.99) compared to Azure Translate (77.6). This indicates that Google Translate's output aligns more closely with reference translations on average.
+    \item \textbf{ROUGE Scores}: Google Translate also outperformed Azure Translate in various ROUGE metrics (ROUGE-1, ROUGE-2, ROUGE-3, and ROUGE-L), reflecting better recall of n-grams and longer phrases from the reference texts
+\end{itemize}
+
+\paragraph{Human Evaluation:} Human evaluations offered insights into the fluency, inter-pretability, and overall quality of the translations. Google Translate received a higher human score (87.45) compared to Azure Translate (63.53), indicating superior quality as perceived by human judges.
+
+The manual analysis of translations in line with these metrics and scores, presented us with a clearer picture of the issues which might've produced a lower score, and we also got to understand where and why they produced higher scores. There were quite a few translation divergences. Translation divergences reveal the challenges MT systems face in handling complex linguistic phenomena. These divergences were categorized as syntactic, lexical, and semantic. 
+
+Both systems exhibited issues with maintaining the syntactic structure of the source text. Google Translate handled these divergences more effectively, preserving the original syntax better than Azure Translate. Lexical divergences were quite common. However, Google produced better alternatives, for instance, Google Translate accurately translated ``Punishment for forgery," while Azure Translate's ``Penalty for encryption" was a significant misinterpretation. An example of semantic divergence is the reference translation ``Lurking house-trespass by night,", for which Azure's translation is ``Night Hidden Planet Trespass".
+
+ The comparative analysis highlights that while both Google Translate and Azure Translate have made significant progress, Google Translate consistently outperforms Azure Translate in terms of automated metrics and human evaluations. This can be attributed to Google's advanced NMT models and extensive training data. 
+
+ \paragraph{Google Translate Stengths}
+ \begin{itemize}
+     \item Higher BLEU and ROUGE scores
+     \item Superior human evaluation scores, indicating higher fluency and accuracy
+     \item More effective handling of syntactic and lexical divergences
+ \end{itemize}
+
+ \paragraph{Azure Translate Weaknesses}
+ \begin{itemize}
+     \item Lower scores on all metrics compared to Google Translate
+     \item More frequent and severe translation errors, particularly in syntax and lexical accuracy
+ \end{itemize}
+
+\phantomsection
+\section{Suggestions for Further Research}
+
+\begin{itemize}
+    \item This analysis could be applied further to general legal texts, such as judgments, court proceedings, or contracts. To better understand its implications in a more general setting.
+    \item A bigger dataset could be considered for the same.
+    \item Multiple human scorers and different metrics could be considered.
+    \item This study could be taken up for other genres, such as literary text, general social media interactions, etc.
+\end{itemize}
+
+ The findings underscore the importance of continuous improvement in MT systems, especially for complex texts like the IPC. The superior performance of Google Translate highlights the value of advanced NMT models and extensive training data. Though the performance of these tools is not bad, the limitations observed could create real issues in legal translation and will require human evalua-tion. Overall the comparative analysis of Google Translate and Azure Translate reflects the significant progress in MT over the years. While modern MT tools like Google Translate have achieved remarkable accuracy and fluency, there still remains room for improvement.

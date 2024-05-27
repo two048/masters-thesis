@@ -1,0 +1,245 @@
+\clearpage
+\appendix
+\phantomsection
+\addcontentsline{toc}{chapter}{Appendix A}
+\chapter*{Appendix A: Codes}
+
+\begin{figure}[h]
+    \includegraphics[width=0.2\linewidth]
+    {images/masters_thesis_qr.png}
+    \hspace{0.5cm}
+    \includegraphics[width=0.2\linewidth]{images/translating_qr.png}
+    \hspace{0.5cm}
+    \includegraphics[width=0.2\linewidth]{images/metrics_qr.png}
+    \hspace{0.5cm}
+    \includegraphics[width=0.2\linewidth]{images/analysis_qr.png}
+    \caption*{\textbf{A}\hspace{3.3cm}\textbf{B}\hspace{3.3cm}\textbf{C}\hspace{3.3cm}\textbf{D}}
+\end{figure}
+
+{\large\textbf{A -}} \href{https://drive.google.com/drive/folders/1TTYZZB0wPYgtiRIskFhZ9-RgWjYXUDtq?usp=sharing}{https://drive.google.com/drive/folders/1TTYZZB0wPYgtiRIskFhZ9-Rg\\WjYXUDtq?usp=sharing} - \textbf{Masters Thesis Main Folder}
+
+{\large\textbf{B -}} \href{https://drive.google.com/drive/folders/1TTYZZB0wPYgtiRIskFhZ9-RgWjYXUDtq?usp=sharing}{https://drive.google.com/drive/folders/1TTYZZB0wPYgtiRIskFhZ9-Rg\\WjYXUDtq?usp=sharing} - \textbf{Translation Notebook}
+
+{\large\textbf{C -}} \href{https://drive.google.com/drive/folders/1TTYZZB0wPYgtiRIskFhZ9-RgWjYXUDtq?usp=sharing}{https://drive.google.com/drive/folders/1TTYZZB0wPYgtiRIskFhZ9-Rg\\WjYXUDtq?usp=sharing} - \textbf{Metrics Calculation Notebook}
+
+{\large\textbf{D -}} \href{https://drive.google.com/drive/folders/1TTYZZB0wPYgtiRIskFhZ9-RgWjYXUDtq?usp=sharing}{https://drive.google.com/drive/folders/1TTYZZB0wPYgtiRIskFhZ9-Rg\\WjYXUDtq?usp=sharing} - \textbf{Analysis Notebook}
+
+\section*{Code for Sampling}
+
+We divided the sample dataset into 50 subsets of 10 and selected a random section out of the 10. Thus having a sample dataset of 51 Sections.
+
+\singlespacing
+\begin{minted}{python}
+from random import randint
+
+no_of_sections = 510 # Excluding Section 511
+
+sample = [i+randint(1,10) for i in range(0, no_of_sections, 10)]
+\end{minted}
+\doublespacing
+
+\section*{Code for Translating the Text from Hindi to English, using both Google Translate and Azure Translate}
+
+\singlespacing
+\begin{minted}[breaklines]{python}
+# Initial Setup
+
+# Importing basic packages which would be required, and mounting the drive to read the dataset and write the output.
+
+
+from google.colab import drive
+import requests, uuid, json
+import pandas as pd
+drive.mount('/content/drive')
+
+# Reading the dataset into a DataFrame using pandas.
+
+df = pd.read_csv('drive/MyDrive/Masters Thesis - 2019IMSLI003/dataset_IPC.csv')
+df.head()
+
+# Google Translate
+
+# Importing required packages for using Google Translate API
+
+
+from google.cloud import translate_v2 as translate
+from google.oauth2 import service_account
+
+# Defining a function for translation using appropriate credentials
+
+def translate_text(text_translate, target_lang='en', credentials_path='drive/MyDrive/careful-ensign-422118-u3-ba712c925224.json'):
+  credentials = service_account.Credentials.from_service_account_file(credentials_path)
+  translator = translate.Client(credentials=credentials)
+
+  translation = translator.translate(text_translate, target_language=target_lang)
+
+  return translation
+
+# Translating the hindi text using Google Translate and storing it in a column titled 'Google Translate'.
+
+df['Google Translate'] = None
+
+for index,text_to_translate in enumerate(df['Hindi']):
+  df.at[index, 'Google Translate'] = translate_text(text_to_translate).get('translatedText')
+
+# Let's take a look at the output.
+
+df.head()
+
+# Azure Cognitive Services Translate
+
+# Setting up the REST API for Azure Translate, including the require key and endpoints, along with other basic attributes.
+
+
+key = "4ee107e2c5ce40b28c6741d0d0de32a5"
+endpoint = "https://api.cognitive.microsofttranslator.com"
+location = "centralindia"
+path = '/translate'
+constructed_url = endpoint + path
+
+params = {
+    'api-version': '3.0',
+    'from': 'hi',
+    'to': ['en']
+}
+
+headers = {
+    'Ocp-Apim-Subscription-Key': key,
+    'Ocp-Apim-Subscription-Region': location,
+    'Content-type': 'application/json',
+    'X-ClientTraceId': str(uuid.uuid4())
+}
+
+# Using Azure Translate to translate and store the text in a column with header 'Azure Translation'.
+
+df['Azure Translate'] = None
+
+for index,text_to_translate in enumerate(df['Hindi']):
+  body = [{
+    'text': text_to_translate
+  }]
+
+  request = requests.post(constructed_url, params=params, headers=headers, json=body)
+  response = request.json()
+
+  df.at[index, 'Azure Translate'] = response[0]['translations'][0]['text']
+
+df.head()
+
+# Saving the translated dataset
+
+df.to_csv('drive/MyDrive/Masters Thesis - 2019IMSLI003/dataset_IPC_translated.csv', index=False)
+\end{minted}
+\doublespacing
+
+\section*{Code to Calculate the Metrics for the Translations}
+
+\singlespacing
+\begin{minted}[breaklines]{python}
+# Initial Setup
+
+# Connecting Google Drive
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+# Importing the basic packages required
+
+import pandas as pd
+import re
+
+# Reading the data to be processed into a DataFrame
+
+df = pd.read_csv('drive/MyDrive/Masters Thesis - 2019IMSLI003/dataset_IPC_translated.csv')
+df.head()
+
+# Preprocessing
+
+# Making the text lowercase and removing special characters.
+
+def clean(text):
+  text = text.lower()
+  text = re.sub(r"[^\w]", " ", text)
+  text = re.sub(r"\s+", " ", text)
+  return text
+
+reference = df['English'].apply(clean)
+hypothesis_google = df['Google Translate'].apply(clean)
+hypothesis_azure = df['Azure Translate'].apply(clean)
+
+# BLEU
+
+# Importing the required packages and write a function to calculate the BLEU score (sentence BLEU in this case)
+
+
+import math
+from nltk.translate.bleu_score import sentence_bleu
+
+def calculate_bleu_score(reference, hypothesis, weights=(0.25, 0.25, 0.25, 0.25)):
+  if not reference or not hypothesis:
+    return None
+
+  if isinstance(reference, str):
+    reference = [reference]
+
+  try:
+    bleu_score = sentence_bleu(reference, hypothesis, weights=weights, smoothing_function=None)
+  except ZeroDivisionError:
+    bleu_score = None
+
+  return bleu_score
+
+# Calculating the BLEU metric for the dataset and adding it to the DataFrame. We also calculate the token length of each section, for reference as we translated counterparts.
+
+df['reference_len'] = None
+df['google_len'] = None
+df['azure_len'] = None
+df['google_bleu'] = None
+df['azure_bleu'] = None
+
+for index, refrence, google_hypothesis, azure_hypothesis in zip(range(len(df)), reference, hypothesis_google, hypothesis_azure):
+  google_bleu = calculate_bleu_score(refrence, google_hypothesis)
+  azure_bleu = calculate_bleu_score(refrence, azure_hypothesis)
+
+  df.at[index, 'reference_len'] = len(refrence.split())
+  df.at[index, 'google_len'] = len(google_hypothesis.split())
+  df.at[index, 'azure_len'] = len(azure_hypothesis.split())
+
+  df.at[index, 'google_bleu'] = round(google_bleu*100, 2)
+  df.at[index, 'azure_bleu'] = round(azure_bleu*100, 2)
+
+# ROGUE
+
+# Importing the required packages and calculating ROGUE metric, and defining a function to calculate the ROUGE score.
+
+
+from rouge_score import rouge_scorer
+
+rouge_metrics = ['rouge1', 'rouge2', 'rouge3', 'rougeL']
+scorer = rouge_scorer.RougeScorer(rouge_metrics)
+
+def calculate_rouge_score(reference, hypothesis):
+  if not reference or not hypothesis:
+    return None
+
+  scores = scorer.score(hypothesis, reference)
+
+  scores_f = [round(scores[i][2]*100,2) for i in rouge_metrics]
+  return scores_f
+
+# Calculating the ROUGE score for the dataset.
+
+df['google_rouge'] = None
+df['azure_rouge'] = None
+
+for index, hypothesis, google_hypothesis, azure_hypothesis in zip(range(len(df)), reference, hypothesis_google, hypothesis_azure):
+  google_rouge = calculate_rouge_score(hypothesis, google_hypothesis)
+  azure_rouge = calculate_rouge_score(hypothesis, azure_hypothesis)
+  df.at[index, 'google_rouge'] = google_rouge
+  df.at[index, 'azure_rouge'] = azure_rouge
+
+# Writing the calculated metrics to csv
+
+df.to_csv('drive/MyDrive/Masters Thesis - 2019IMSLI003/dataset_IPC_metrics.csv', index=False)
+\end{minted}
+\doublespacing

@@ -1,0 +1,103 @@
+\phantomsection
+\chapter{Methodology}\label{chap:meth}
+
+The dataset used for this study were IPC sections, simplest of legal statements, and the tools analysed were Google Translate and Azure Translate. While conducting an analysis of both these tools individually, we also got a chance to compare their performance. Let us look briefly at both these tools:
+
+\paragraph{Google Translate} Launched in 2006, Google Translate began by statistically analyzing mountains of text, like UN documents. This method translated text piece by piece, often leading to awkward phrasing. In 2016, Google Translate underwent a major leap with neural machine translation (NMT). This shift, along with constant learning from vast amounts of text data, has propelled Google Translate from clunky translations to a powerful tool that breaks down language barriers with increasing accuracy and fluency. 
+
+\paragraph{Azure Translate} Similar to Google Translate, Azure Translate by Microsoft utilizes neural machine translation (NMT) technology. First launched in 2009, Azure Translate initially relied on statistical machine translation. The integration of NMT in recent years has significantly improved its fluency and accuracy. 
+
+\phantomsection
+
+\phantomsection
+\section{Data Collection}
+
+The data for this study was collected from two distinct sources. For English, the data was derived from the official website of the Legislative Department under the Ministry of Law and Justice. The link to the dataset, as at the time of writing this report has been mentioned in Appendix B.
+
+For Hindi, the data was derived from a website named 'LawRato.com', the data taken from this website has been used purely for research purposes. The author of the Hindi versions of the IPC Sections is Advocate Chikisha Mohanty.
+
+The data was consolidated after sampling 51 Sections out of the 511 Sections. We divided the 511 sections into 51 sets of 10, and then selected a random section out of the everyone of the 51 sets. We used the following code for sampling:
+
+\singlespacing
+\begin{minted}{python}
+from random import randint
+
+no_of_sections = 510 # Excluding Section 511
+sample = [i+randint(1,10) for i in range(0, no_of_sections, 10)]
+\end{minted}
+\doublespacing
+
+After consolidation, the sample dataset was stored in CSV (comma-separated values) format, as well as in the form of a Google Sheet document.
+
+\phantomsection
+\section{Processing}
+
+We used Python for all the steps of the processing. The processing was done on Jupyter Notebooks hosted on Google Colab. The Python code, as well as the link to the Notebooks are available in Appendix B.
+
+In the first step we translated the Hindi version of the IPC to English. Then we evaluated the translations using automated metrics, along with human evaluation. The metrics we used in this study are BLEU score and the ROUGE score, these metrics have been discussed briefly further down this chapter.
+
+For human evaluation we have adopted a two pronged strategy. First part of the strategy is to get a bilingual person proficient in both Hindi and English to rate the quality of translation out of 5. The second part involves manually identifying divergences from the translation.
+
+\phantomsection
+\subsection{Translation}
+
+Consolidated dataset was stored under the name `\textit{dataset\_IPC}'. The first step of the analysis involved translating Hindi text in this dataset, to English. The NMT systems we analysed in this study are Google Translate and Azure Translate. This step involved setting up the Google Cloud services as well as Azure Cloud services APIs for accessing translation services of both these providers. 
+
+These APIs were then used to translate the whole dataset using Python, on Google Colab, these translations were added to the DataFrame, which was then saved under the name - `\textit{dataset\_IPC\_translated}'.
+
+\phantomsection
+\subsection{Evaluating the Translations}
+
+The evaluation of translations was done in the following manner - 
+
+\paragraph{Step 1} The first step involved selecting and calculating automated metrics to present a numerical representation of the quality of translation. The metrics used for this purpose were BLEU, and ROUGE, both of which are discussed briefly, further down this chapter. We have calculated Sentence BLEU score, ROUGE-1, ROUGE-2, ROUGE-3 and ROUGE-L scores for translations done by both the translation tools separately. NLTK was used for BLEU score, and a Python package named 'rouge\_score' was used to calculate the ROUGE scores.
+
+\paragraph{Step 2} Though BLEU score has shown a clear correlation with how a human might perceive the quality of translations, it is still inadequate, and as per the norm of assessment for translation tools, we also scored the quality of translations with the help of human participants. For this step they were given 3 sheets; First contained the reference English sentences, their Hindi counterparts, Google translated sentences and Azure translated sentences; The second and third sheets both contained reference English sentences, and Hindi counterparts, while second contained another column for Google translated sentences and third contained Azure translations.
+
+The participants were then asked to go through the first sheet once, to familiarize them with the task and the general level of translation by both the systems. They were then asked to rate the translations by comparing them to original English counterparts. They were asked to rate the translation between 1-5, while keeping in mind - fluency, interpret-ability, accuracy and overall sense of the translation; 1 meant that the translation lost the sense of the original translation in its entirety, whereas 5 meant near perfect translation in comparison to the reference sentences.
+
+\paragraph{Step 3} The final step involved expert evaluation of the translations, while also keeping in mind the scores received in automated and human rating. The translati-ons were analysed for different divergences as mentioned in the introduction, as well as for accuracy, fluency and artificiality. Most prevalent types of translation errors were them compiled for both the systems - (1) independently, (2) overall and (3) in contrast to each other.
+
+Note: Three columns were also added of the evaluation containing the token length of the reference, and both the translations.
+
+\phantomsection
+\section{Metrics}
+
+\phantomsection
+\subsection{BLEU}
+
+\gls{bleu} is a widely used metric to assess the quality of machine translation, acting like a judge's scorecard for machine translati-ons. It compares a machine's translation to high-quality human translations by analyzing how well they match at the level of building blocks like single words (unigrams) and phrases (bigrams). BLEU rewards translations with n-grams that appear frequently in the references, but penalizes those that are too short. Here's a simplified formula:
+
+$BLEU \ Score = BP \cdot \exp(\Sigma [\log(p_{n\_gram})])$
+
+
+\begin{itemize}
+    \item $BP$ (Brevity Penalty) -  To discourage overly short translations
+    \item $p_{n\_gram}$ - Precision score for a specific n-gram length, reflecting the proportion of n-grams in the machine translation that also appear in any of the reference translations.
+\end{itemize}
+
+By combining these elements with a weighted geometric mean ($\exp(\Sigma [\log(p_{n\_gram})])$), BLEU produces a single score between 0 and 1. A higher score indicates a better translation, with a perfect score of 1 meaning the machine perfectly mimicked a human translator. However, BLEU isn't without limitations. It might miss aspects like fluency or natural flow of language, and works better for a large set of translations (corpus) rather than individual sentences. Additionally, the number and quality of reference translations can influence the score. Despite these shortcomings, BLEU remains a popular tool for its simplicity and ability to provide a quantitative assessment of machine translation quality.
+
+\phantomsection
+\subsection{ROUGE}
+
+While BLEU is a common metric for machine translation evaluation, it can miss the bigger picture. \gls{rouge} offers a more nuanced approach, applicable not just to translation but also to tasks like text summarization. ROUGE-N and ROUGE-L are two key variants within the ROUGE suite. In machine translation evaluation, ROUGE-N measures how often sequences of words (unigrams, bigrams etc.) from the translation match those in the human-crafted reference translations. This assesses how well the translation retains the core vocabulary and phrasing. ROUGE-L, on the other hand, focuses on the \gls{lcs}, the longest string of words appearing in the same order between the translation and the reference. This ensures the translation conveys the essential ideas while potentially allowing for some rephrasing for better fluency.
+
+\paragraph{Note:} However, either of these metrics need to be substantiated and validated by human evaluation, both these approaches focus and statistical occurrences of words they observe in the reference sentences, and thus are limited by them. They may look over the nuances which a human might easily be able to uncover.
+
+\section{Tools \& Technologies}
+
+\begin{itemize}
+    \item Google Cloud Services
+    \item Azure Cloud Services
+    \item Jupyter Notebook/Google Colab
+    \item Python
+    \item Python packages used for analysis and visualization:
+    \begin{itemize}
+        \item pandas
+        \item NLTK
+        \item rouge\_scorer
+        \item matplotlib
+        \item seaborn
+    \end{itemize}
+\end{itemize}

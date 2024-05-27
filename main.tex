@@ -1,0 +1,104 @@
+\documentclass[12pt,a4paper,oneside]{book}
+
+\usepackage{graphicx} % Required for inserting images
+\usepackage{hyperref}
+\usepackage{babel}
+\usepackage{xeCJK}
+\usepackage{parskip}
+\usepackage{caption}
+\usepackage{setspace}
+\usepackage{fontspec}
+\usepackage{minted}
+\usepackage{xcolor}
+\usepackage{longtable}
+\usepackage{geometry}
+\usepackage{lscape}
+\usepackage{tabularx}
+\usepackage{appendix}
+\usepackage{fancyhdr}
+\usepackage[acronym, nonumberlist]{glossaries}
+
+\makeglossaries
+\glsdisablehyper
+\newacronym{bleu}{BLEU}{Bilingual Evaluation Understudy}
+\newacronym{rouge}{ROUGE}{Recall-Oriented Understudy for Gisting Evaluation}
+\newacronym{bp}{BP}{Brevity Penalty}
+\newacronym{pngram}{pn\_gram}{Precision score for a specific n-gram length}
+\newacronym{lcs}{LCS}{Longest Common Subsequence}
+\newacronym{mt}{MT}{Machine Translation}
+\newacronym{alpac}{ALPAC}{Automatic Language Processing Advisory Committee}
+\newacronym{nmt}{NMT}{Neural Machine Translation}
+\newacronym{smt}{SMT}{Statistical Machine Translation}
+\newacronym{ipc}{IPC}{Indian Penal Code}
+\newacronym{nlp}{NLP}{Natural Language Processing}
+\newacronym{nltk}{NLTK}{Natural Language Toolkit}
+\newacronym{csv}{CSV}{Comma-Separated Values}
+\newacronym{llm}{LLM}{Large Language Model}
+\newacronym{sl}{SL}{Source Language}
+\newacronym{tl}{TL}{Target Language}
+\newacronym{st}{ST}{Source Text}
+\newacronym{tt}{TT}{Target Text}
+\newacronym{rbmt}{RBMT}{Rule-Based Machine Translation}
+\newacronym{ebmt}{EBMT}{Example-Based Machine Translation}
+\newacronym{bert}{BERT}{Bidirectional Encoder Representation from Transformers}
+\newacronym{gpt}{GPT}{Generative Pre-trained Transformers}
+
+
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[R]{}
+
+\newfontfamily\hindifont{Noto Sans Devanagari}[Script=Devanagari]
+
+\setlength{\parskip}{8pt}
+\setlength{\parindent}{16pt}
+\doublespacing
+
+\begin{document}
+\frontmatter
+
+\input{frontmatter/titlepage}
+
+\input{frontmatter/declaration}
+
+\input{frontmatter/certificate}
+
+\input{frontmatter/acknowledgement}
+
+\input{frontmatter/abstract}
+
+\listoffigures
+\listoftables
+
+\singlespacing
+\printglossary[type=\acronymtype, title=List of Abbreviations]
+\doublespacing
+
+
+\mainmatter
+
+\tableofcontents
+
+\input{mainmatter/chapter1}
+
+\input{mainmatter/chapter2}
+
+\input{mainmatter/chapter3}
+
+\input{mainmatter/chapter4}
+
+\input{mainmatter/chapter5}
+
+\backmatter
+
+\clearpage
+\bibliographystyle{apalike}
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliography{ref}
+
+\appendixpage
+\input{appendixA}
+\input{appendixB}
+
+\end{document}
